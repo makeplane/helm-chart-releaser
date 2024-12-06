@@ -108,7 +108,7 @@ func (r *Releaser) UpdateIndexFile() (bool, error) {
 	// if pages-index-path doesn't end with index.yaml we can try and fix it
 	if filepath.Base(r.config.PagesIndexPath) != "index.yaml" {
 		// if path is a directory then add index.yaml
-		if stat, err := os.Stat(filepath.Join(worktree, r.config.PagesIndexPath)); err == nil && stat.IsDir() {
+		if err := os.MkdirAll(filepath.Join(worktree, r.config.PagesIndexPath), 0755); err == nil {
 			r.config.PagesIndexPath = filepath.Join(r.config.PagesIndexPath, "index.yaml")
 			// otherwise error out
 		} else {
@@ -323,6 +323,7 @@ func (r *Releaser) CreateReleases() error {
 			Commit:               r.config.Commit,
 			GenerateReleaseNotes: r.config.GenerateReleaseNotes,
 			MakeLatest:           strconv.FormatBool(r.config.MakeReleaseLatest),
+			Prerelease:           r.config.Prerelease,
 		}
 		provFile := fmt.Sprintf("%s.prov", p)
 		if _, err := os.Stat(provFile); err == nil {
